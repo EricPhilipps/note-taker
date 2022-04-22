@@ -9,8 +9,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`));
-
 app.get("/notes", function(req, res) {
     res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
@@ -20,9 +18,17 @@ app.get('*', function(req, res) {
 });
 
 app.get("/api/notes", function(req, res) {
-
-})
+    res.sendFile(path.join(__dirname, "/db/db.json"));
+});
 
 app.post("/api/notes", function(req, res) {
+    let note = req.body;
+    let noteList = JSON.parse(fs.readFileSync("./db/db.json"));
 
-})
+    noteList.push(note);
+
+    fs.writeFileSync("./db/db.json", JSON.stringify(noteList));
+    res.json(noteList);
+});
+
+app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`));
